@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Valentine Monkey Snake 💖</title>
+  <style>
+    body {
+      margin: 0;
+      background: #ffe6ee;
+      font-family: 'Comic Sans MS', 'Arial', sans-serif;
+      text-align: center;
+    }
+
+    #gameContainer {
+      width: 800px;
+      margin: auto;
+      margin-top: 20px;
+    }
+
+    #game {
+      width: 800px;
+      height: 800px;
+      position: relative;
+      display: none;
+      background: #fff0f5;
+      border: 3px solid #ff4d88;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+
+    #head, .segment {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: url("monkey.png") no-repeat center;
+      background-size: cover;
+      z-index: 2;
+    }
+
+    #star {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: url("star.png") no-repeat center;
+      background-size: cover;
+      z-index: 1;
+    }
+
+    .block {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background-color: black;
+      z-index: 1;
+    }
+
+    #score {
+      font-size: 24px;
+      color: #ff4d88;
+      margin-top: 10px;
+    }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 230, 238, 0.97);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 999;
+      padding: 25px;
+    }
+
+    .hidden { display: none; }
+
+    #finalScreen { overflow: hidden; }
+
+    h1 {
+      font-size: 42px;
+      color: #ff4d88;
+      line-height: 1.4;
+      margin-bottom: 30px;
+      animation: fadeIn 1.8s ease;
+    }
+
+    button {
+      font-size: 22px;
+      padding: 14px 30px;
+      border-radius: 40px;
+      border: none;
+      cursor: pointer;
+      background: #ff4d88;
+      color: white;
+      transition: 0.2s ease;
+    }
+
+    button:hover { transform: scale(1.05); }
+
+    .btns { display: flex; gap: 30px; margin-top: 20px; }
+    #noBtn { background: #ccc; color: black; position: relative; }
+
+    .heart {
+      position: absolute;
+      font-size: 24px;
+      animation: floatUp 6s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-100vh); opacity: 0; }
+    }
+
+    .confetti {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+      from { transform: translateY(-10px) rotate(0deg); }
+      to { transform: translateY(110vh) rotate(720deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen 1 -->
+  <div id="screen1" class="screen">
+    <h1>
+      Hey you.<br><br>
+      You didn't ask me to be your valentine. ☹️<br><br>
+      so i took matters into mah own hands
+    </h1>
+    <button onclick="go(2)">Next 💕</button>
+  </div>
+
+  <!-- Screen 2 -->
+  <div id="screen2" class="screen hidden">
+    <h1>
+      I made something for you.<br>
+      Just a little something…<br><br>
+      💖<br>
+    </h1>
+    <button onclick="go(3)">Next 🎮</button>
+  </div>
+
+  <!-- Screen 3 -->
+  <div id="screen3" class="screen hidden">
+    <h1>
+      I know being with me hasn’t been easy…<br><br>
+      but I shall make it harder with this game 😈
+    </h1>
+    <button onclick="go(4)">Next 🥏</button>
+  </div>
+
+  <!-- Screen 4 -->
+  <div id="screen4" class="screen hidden">
+    <h1>
+      In conjuction with our 10 months, <br><br>
+      you need to collect 10 stars ⭐<br>
+      with a game we used to play as kids 😏<br><br>
+      Click next to play, hehehe 🎮
+    </h1>
+    <button onclick="startGame()">Next ✨</button>
+  </div>
+
+  <!-- Game -->
+  <div id="gameContainer">
+    <div id="score">Stars: 0 / 10</div>
+    <div id="game">
+      <div id="head"></div>
+      <div id="star"></div>
+    </div>
+  </div>
+
+  <!-- Final Screen -->
+  <div id="finalScreen" class="screen hidden">
+    <h1>Will you be my Valentine? 💖</h1>
+    <p style="font-size:18px; color:#ff4d88; margin-top:10px;">
+      i dare you to try to click NO 😈
+    </p>
+    <div class="btns">
+      <button id="yesBtn">YES 😍</button>
+      <button id="noBtn">NO 😈</button>
+    </div>
+
+<script>
+  // ---------------- SCREEN NAVIGATION ----------------
+  function go(n){
+    document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden"));
+    document.getElementById("screen"+n).classList.remove("hidden");
+  }
+
+  // ---------------- HEARTS + CONFETTI ----------------
+  function spawnHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerText = "💖";
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.style.bottom = "-30px";
+    heart.style.animationDuration = (3 + Math.random() * 4) + "s";
+    finalScreen.appendChild(heart);
+    setTimeout(() => heart.remove(), 7000);
+  }
+
+  function startHearts() { setInterval(spawnHeart, 300); }
+
+  function createConfetti() {
+    for (let i = 0; i < 150; i++) {
+      const conf = document.createElement("div");
+      conf.className = "confetti";
+      conf.style.left = Math.random() * window.innerWidth + "px";
+      conf.style.background = `hsl(${Math.random() * 360},100%,60%)`;
+      conf.style.animationDuration = (2 + Math.random() * 2) + "s";
+      document.body.appendChild(conf);
+      setTimeout(() => conf.remove(), 4000);
+    }
+  }
+
+  // ---------------- MONKEY SNAKE GAME ----------------
+  const gridSize = 30;
+  const boardSize = 800;
+  let snake = [{x: 5, y: 5}];
+  let direction = {x:1, y:0};
+  let newSegments = 0;
+  let star = {x: 10, y: 10};
+  let score = 0;
+  let gameSpeed = 120; // faster starting speed
+  let lastTime = 0;
+  let moveCounter = 0;
+
+  const headDiv = document.getElementById("head");
+  const starDiv = document.getElementById("star");
+  const game = document.getElementById("game");
+  const scoreDisplay = document.getElementById("score");
+  const finalScreen = document.getElementById("finalScreen");
+  const noBtn = document.getElementById("noBtn");
+  const yesBtn = document.getElementById("yesBtn");
+
+  let blocks = []; // obstacles
+
+  const keys = {};
+  document.addEventListener("keydown", e => keys[e.key] = true);
+  document.addEventListener("keyup", e => keys[e.key] = false);
+
+  function placeStar() {
+    star.x = Math.floor(Math.random() * (boardSize / gridSize));
+    star.y = Math.floor(Math.random() * (boardSize / gridSize));
+    starDiv.style.left = star.x * gridSize + "px";
+    starDiv.style.top = star.y * gridSize + "px";
+  }
+
+  function placeBlocks() {
+    document.querySelectorAll(".block").forEach(b=>b.remove());
+    blocks = [];
+    for(let i=0;i<20;i++){
+      const bx = Math.floor(Math.random()*(boardSize/gridSize));
+      const by = Math.floor(Math.random()*(boardSize/gridSize));
+      if(snake[0].x===bx && snake[0].y===by) continue;
+      blocks.push({x:bx,y:by});
+      const bdiv = document.createElement("div");
+      bdiv.className="block";
+      bdiv.style.left=bx*gridSize+"px";
+      bdiv.style.top=by*gridSize+"px";
+      game.appendChild(bdiv);
+    }
+  }
+
+  function resetGame() {
+    snake = [{x:5, y:5}];
+    direction = {x:1, y:0};
+    newSegments = 0;
+    score = 0;
+    gameSpeed = 120;
+    scoreDisplay.innerText = "Stars: 0 / 10";
+    placeStar();
+    placeBlocks();
+  }
+
+  function updateSnake() {
+    snake.unshift({x: snake[0].x + direction.x, y: snake[0].y + direction.y});
+    if (newSegments === 0) snake.pop();
+    else newSegments--;
+
+    document.querySelectorAll(".segment").forEach(s => s.remove());
+    for (let i=1;i<snake.length;i++){
+      const seg = document.createElement("div");
+      seg.className = "segment";
+      seg.style.left = snake[i].x*gridSize+"px";
+      seg.style.top = snake[i].y*gridSize+"px";
+      game.appendChild(seg);
+    }
+
+    headDiv.style.left = snake[0].x*gridSize+"px";
+    headDiv.style.top = snake[0].y*gridSize+"px";
+  }
+
+  function checkCollision() {
+    if (snake[0].x < 0 || snake[0].x >= boardSize / gridSize || snake[0].y < 0 || snake[0].y >= boardSize / gridSize) {
+      resetGame();
+      return;
+    }
+    for (let i=1;i<snake.length;i++){ 
+      if (snake[i].x===snake[0].x && snake[i].y===snake[0].y){
+        resetGame();
+        return;
+      }
+    }
+    for (let b of blocks){
+      if(b.x===snake[0].x && b.y===snake[0].y){
+        resetGame();
+        return;
+      }
+    }
+  }
+
+  function checkStar() {
+    if (snake[0].x === star.x && snake[0].y === star.y) {
+      newSegments++;
+      score++;
+      scoreDisplay.innerText = "Stars: "+score+" / 10";
+      placeStar();
+      gameSpeed = Math.max(50, gameSpeed - 5);
+      if(score >= 10){
+        game.style.display = "none";
+        finalScreen.classList.remove("hidden");
+        startHearts();
+      }
+    }
+  }
+
+  function startGame() {
+    document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden"));
+    game.style.display = "block";
+    resetGame();
+    requestAnimationFrame(gameLoop);
+  }
+
+  function gameLoop(timestamp) {
+    if (!lastTime) lastTime = timestamp;
+    const delta = timestamp - lastTime;
+    lastTime = timestamp;
+
+    moveCounter += delta;
+    if (moveCounter > gameSpeed) {
+      moveCounter = 0;
+     if(keys["ArrowUp"] && direction.y !== 1) { direction = {x:0,y:-1}; keys["ArrowUp"] = false; }
+if(keys["ArrowDown"] && direction.y !== -1) { direction = {x:0,y:1}; keys["ArrowDown"] = false; }
+if(keys["ArrowLeft"] && direction.x !== 1) { direction = {x:-1,y:0}; keys["ArrowLeft"] = false; }
+if(keys["ArrowRight"] && direction.x !== -1) { direction = {x:1,y:0}; keys["ArrowRight"] = false; }
+
+      updateSnake();
+      checkCollision();
+      checkStar();
+    }
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  // ---------------- FINAL SCREEN ----------------
+  noBtn.onmouseenter = () => {
+    noBtn.style.position = "fixed";
+    noBtn.style.left = Math.random() * (window.innerWidth - 150) + "px";
+    noBtn.style.top = Math.random() * (window.innerHeight - 80) + "px";
+  };
+
+ yesBtn.onclick = () => {
+    finalScreen.innerHTML = `<h1> YAYYYYY I LOVE YOU💘 <br><br>
+    Happy soon to be 10 months! 💖<br>
+    </h1>
+    <p style="margin-top:20px; font-size:18px; color:#ff4d88;">
+    Oh btw, dress cute 😉 I've booked a restaurant and will arrive at your place around 6:40pm Friday, 13th of Feb. <br>
+    I've got a plan for after dinner too, but we'll see…</p>`;
+    createConfetti();
+  };
+</script>
+</body>
+</html>
